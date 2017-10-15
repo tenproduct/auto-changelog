@@ -23,7 +23,7 @@ import sys
 
 import docopt
 
-from .parser import group_commits, traverse
+from .parser import traverse
 from .generator import generate_changelog
 from . import __version__
 
@@ -43,11 +43,11 @@ def main():
 
     try:
         # Traverse the repository and group all commits to master by release
-        tags, unreleased = traverse(args['--repo'])
+        tags, unreleased = traverse(repo)
     except ValueError as e:
         print('ERROR:', e)
         sys.exit(1)
-    
+
     changelog = generate_changelog(
             template_dir=template_dir,
             title=args['--title'],

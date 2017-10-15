@@ -16,9 +16,9 @@ def group_commits(tags, commits):
     # Adding the tag's commit manually because those seem to be skipped
     commits.extend([Commit(t._commit) for t in tags])
 
-    # Sort the commits and filter out those not formatted correctly
+    # Sort the commits -and filter out those not formatted correctly-
     commits = sorted(commits, key=lambda c: c.date)
-    commits = list(filter(lambda c: c.category, commits))
+    # commits = list(filter(lambda c: c.category, commits))
     
     for index, tag in enumerate(tags):
         # Everything is sorted in ascending order (earliest to most recent), 
@@ -51,13 +51,22 @@ def traverse(base_dir):
             date=tagref.commit.committed_date, 
             commit=tagref.commit)
         wrapped_tags.append(t)
-        
-    commits = list(repo.iter_commits('master'))
-    commits = list(map(Commit, commits)) # Convert to Commit objects
+    wrapped_tags = sorted(wrapped_tags, key=lambda t: t.date)
 
-    # Iterate through the commits, adding them to a tag's commit list
-    # if it belongs to that release
-    left_overs = group_commits(wrapped_tags, commits)
+    for i, tag in enumerate(wrapped_tags):
+        if i == 0:
+            rev = tag.version
+        else:
+            rev = '{}..{}'.format(wrapped_tags[i - 1].version, tag.version)
+
+        for commit in repo.iter_commits(rev, first_parent=True):
+            tag.add_commit(Commit(commit))  # Convert to Commit object and add to the tag by group
+
+    # get commits since the last tag
+    left_overs = list(map(
+            Commit,
+            repo.iter_commits('{}..master'.format(tag.version), first_parent=True)
+    ))
 
     # If there are any left over commits (i.e. commits created since 
     # the last release
@@ -67,4 +76,3 @@ def traverse(base_dir):
         unreleased = None
 
     return wrapped_tags, unreleased
-
