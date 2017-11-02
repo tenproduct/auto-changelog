@@ -65,7 +65,7 @@ def traverse(base_dir):
     # get commits since the last tag
     left_overs = list(map(
             Commit,
-            repo.iter_commits('{}..master'.format(tag.version), first_parent=True)
+            repo.iter_commits('{}..HEAD'.format(tag.version), first_parent=True)
     ))
 
     # If there are any left over commits (i.e. commits created since 
