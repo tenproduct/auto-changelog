@@ -62,8 +62,12 @@ class Commit:
         
         self.category, self.extra_categories, self.specific, self.description = self.categorize()
 
+        last_line = body.splitlines()[-1] if body else ''
+        if re.search(r'ref[:. ]\s*(TPD|TIM)-\d+', last_line, re.IGNORECASE):
+            self.ticket_refs = re.findall(r'(TPD-\d+|TIM-\d+)', last_line, re.IGNORECASE)
+
     def categorize(self):
-        match = re.match(r'(\w+)(\(\w+\))?:\s*(.*)', self.first_line)
+        match = re.match(r'(\w+)(\([\w, ]+\))?:\s*(.*)', self.first_line)
 
         if match:
             categories, specific, description = match.groups()

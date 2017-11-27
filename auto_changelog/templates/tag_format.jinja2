@@ -3,11 +3,11 @@
 ### {{ title }}
 {% for commit in tag.groups[group] %}
 {% if group == 'break' %}
-#### {{ "[" + ','.join(commit.extra_categories) + "] " if commit.extra_categories }}{{ "(" + commit.specific + ") " if commit.specific }}{{ commit.description.strip() }}
+#### {{ "[" + ','.join(commit.ticket_refs) + "] " if commit.ticket_refs }}{{ "[" + ','.join(commit.extra_categories) + "] " if commit.extra_categories }}{{ "(" + commit.specific + ") " if commit.specific }}{{ commit.description.strip() }}
 {{ commit.body }}
 
 {% elif commit.description %}
-- {{ "[" + ','.join(commit.extra_categories) + "] " if commit.extra_categories }}{{ "(" + commit.specific + ") " if commit.specific }}{{ commit.description.strip() }}
+- {{ "[" + ','.join(commit.ticket_refs) + "] " if commit.ticket_refs }}{{ "[" + ','.join(commit.extra_categories) + "] " if commit.extra_categories }}{{ "(" + commit.specific + ") " if commit.specific }}{{ commit.description.strip() }}
 {% endif %}
 {% endfor %}
 
