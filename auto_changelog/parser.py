@@ -57,15 +57,16 @@ def traverse(base_dir):
         if i == 0:
             rev = tag.version
         else:
-            rev = '{}..{}'.format(wrapped_tags[i - 1].version, tag.version)
+            rev = '{}..{}'.format(repo.git.describe('{}~'.format(tag._commit), abbrev=0, tags=True), tag.version)
 
         for commit in repo.iter_commits(rev, first_parent=True):
             tag.add_commit(Commit(commit))  # Convert to Commit object and add to the tag by group
 
     # get commits since the last tag
+    last_tag_name = repo.git.describe(abbrev=0, tags=True)
     left_overs = list(map(
             Commit,
-            repo.iter_commits('{}..HEAD'.format(tag.version), first_parent=True)
+            repo.iter_commits('{}..HEAD'.format(last_tag_name), first_parent=True)
     ))
 
     # If there are any left over commits (i.e. commits created since 
